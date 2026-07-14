@@ -57,7 +57,7 @@ export default function Hero() {
           {/* Action CTAs */}
           <div className="flex flex-col sm:flex-row items-center gap-4 mb-12 w-full justify-center">
             <a
-              href={`https://jup.ag/swap/SOL-${CONTRACT_ADDRESS}`}
+              href="https://jup.ag/swap?sell=So11111111111111111111111111111111111111112&buy=EfU4xWf6c6ZqPKcBxWDjDQyak4iExcBoehXaSacrpump"
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-8 py-3.5 bg-white text-black font-sans font-bold text-xs uppercase tracking-widest rounded-full hover:bg-zinc-200 transition-all duration-300 flex items-center justify-center group"

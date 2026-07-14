@@ -63,7 +63,7 @@ export default function Header() {
           {/* Action Button */}
           <div className="hidden md:flex items-center space-x-4">
             <a
-              href={`https://jup.ag/swap/SOL-${CONTRACT_ADDRESS}`}
+              href="https://jup.ag/swap?sell=So11111111111111111111111111111111111111112&buy=EfU4xWf6c6ZqPKcBxWDjDQyak4iExcBoehXaSacrpump"
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-2 bg-white text-black text-xs font-bold uppercase tracking-widest rounded-full hover:bg-zinc-200 transition-colors"
@@ -129,7 +129,7 @@ export default function Header() {
 
           <div className="space-y-4 pt-6 border-t border-white/5">
             <a
-              href={`https://jup.ag/swap/SOL-${CONTRACT_ADDRESS}`}
+              href="https://jup.ag/swap?sell=So11111111111111111111111111111111111111112&buy=EfU4xWf6c6ZqPKcBxWDjDQyak4iExcBoehXaSacrpump"
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center px-4 py-3 bg-rainbow-gradient text-white font-sans font-bold text-sm rounded-lg hover:opacity-90 transition-opacity duration-300"
