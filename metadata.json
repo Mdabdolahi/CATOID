@@ -1,0 +1,6 @@
+{
+  "name": "CATOID",
+  "description": "A modern, sleek landing page for CATOID - the ultimate RGB/rainbow-studded meme coin and digital brand.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
