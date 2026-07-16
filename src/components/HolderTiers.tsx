@@ -262,7 +262,7 @@ const CatPortraitSVG = ({
     <div className="relative w-full h-full flex items-center justify-center select-none">
       {/* Dynamic Colored Background Aura Radial Glow */}
       <div
-        className="absolute inset-[-10px] rounded-full blur-2xl opacity-40 transition-all duration-700 ease-out z-0 pointer-events-none"
+        className="absolute inset-[-25px] rounded-full blur-2xl opacity-45 transition-all duration-700 ease-out z-0 pointer-events-none"
         style={{
           background:
             tierId === 1 ? 'radial-gradient(circle, rgba(217,119,6,0.35) 0%, transparent 70%)' :
@@ -401,113 +401,189 @@ const HolderTierCard = ({ tier }: { tier: Tier; key?: React.Key }) => {
       {hovered && (() => {
         const rankLevel = tier.id; // 1 to 5
         
-        // Dynamic counts that scale up drastically with rank level
-        const fastCount = rankLevel === 1 ? 4 : rankLevel === 2 ? 10 : rankLevel === 3 ? 20 : rankLevel === 4 ? 35 : 60;
-        const standardCount = rankLevel === 1 ? 8 : rankLevel === 2 ? 16 : rankLevel === 3 ? 32 : rankLevel === 4 ? 50 : 80;
-        const driftCount = rankLevel === 1 ? 4 : rankLevel === 2 ? 10 : rankLevel === 3 ? 20 : rankLevel === 4 ? 35 : 60;
+        // Dynamic counts that scale up drastically with rank level - increased for denser/richer effects!
+        const fastCount = rankLevel === 1 ? 12 : rankLevel === 2 ? 24 : rankLevel === 3 ? 45 : rankLevel === 4 ? 75 : 120;
+        const standardCount = rankLevel === 1 ? 20 : rankLevel === 2 ? 35 : rankLevel === 3 ? 65 : rankLevel === 4 ? 100 : 150;
+        const driftCount = rankLevel === 1 ? 12 : rankLevel === 2 ? 24 : rankLevel === 3 ? 45 : rankLevel === 4 ? 75 : 120;
         
         const shockwaveCount = rankLevel <= 2 ? 1 : rankLevel === 3 ? 2 : rankLevel === 4 ? 3 : 4;
 
         return (
-          <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden rounded-2xl">
+          <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden rounded-2xl">
             {/* Layer A: Fast Shooting Energetic Sparks */}
             {Array.from({ length: fastCount }).map((_, i) => {
               const leftPos = 5 + (i * 90) / (fastCount - 1 || 1) + (Math.sin(i * 3.4) * 5);
+              const topPos = -15 - (i % 5) * 4; // Start above the top edge
               const driftVal = `${(Math.sin(i * 1.7) * 70 * (1 + rankLevel * 0.4)).toFixed(0)}px`;
               const scaleVal = (0.3 + (i % 3) * 0.22) * (0.8 + rankLevel * 0.18);
-              const animDelay = `${(i * (0.6 / fastCount)).toFixed(2)}s`;
+              const animDelay = `${(i * (1.6 / fastCount)).toFixed(2)}s`;
               const size = rankLevel >= 4 ? '4px' : '3px';
+              const fallVal = `${280 + (i % 4) * 35 + rankLevel * 12}px`;
+              
+              // 3D Parallax offset based on mouse position relative to center (glare.x - 50)
+              const factor = 0.12 + (i % 5) * 0.1;
+              const mouseTranslateX = (glare.x - 50) * factor;
+              const mouseTranslateY = (glare.y - 50) * factor;
+
               return (
                 <div
-                  key={`fast-${i}`}
-                  className="absolute bottom-0 rounded-full erupt-spark-fast"
+                  key={`fast-wrap-${i}`}
+                  className="absolute transition-transform duration-200 ease-out"
                   style={{
                     left: `${leftPos}%`,
-                    width: size,
-                    height: size,
-                    backgroundColor: tier.accentColor,
-                    boxShadow: `0 0 ${12 + rankLevel * 7}px ${2 + rankLevel * 0.8}px ${tier.accentColor}, 0 0 ${4 + rankLevel * 2}px 1px #ffffff`,
-                    animationDelay: animDelay,
-                    ['--spark-drift' as any]: driftVal,
-                    transform: `scale(${scaleVal})`,
+                    top: `${topPos}%`,
+                    transform: `translate3d(${mouseTranslateX}px, ${mouseTranslateY}px, 0px)`,
                   }}
-                />
+                >
+                  <div
+                    className="rounded-full erupt-spark-fast"
+                    style={{
+                      width: size,
+                      height: size,
+                      backgroundColor: tier.accentColor,
+                      boxShadow: `0 0 ${12 + rankLevel * 7}px ${2 + rankLevel * 0.8}px ${tier.accentColor}, 0 0 ${4 + rankLevel * 2}px 1px #ffffff`,
+                      animationDelay: animDelay,
+                      ['--spark-drift' as any]: driftVal,
+                      ['--spark-scale' as any]: scaleVal,
+                      ['--spark-y-start' as any]: '0px',
+                      ['--spark-y-end' as any]: fallVal,
+                    }}
+                  />
+                </div>
               );
             })}
 
             {/* Layer B: Medium Speed Standard Sparkles */}
             {Array.from({ length: standardCount }).map((_, i) => {
               const leftPos = 4 + (i * 92) / (standardCount - 1 || 1) + (Math.sin(i * 2.1) * 3);
+              const topPos = -10 - (i % 6) * 3; // Start near the top edge
               const driftVal = `${(Math.sin(i * 1.3) * 45 * (1 + rankLevel * 0.35)).toFixed(0)}px`;
               const scaleVal = (0.35 + (i % 4) * 0.18) * (0.8 + rankLevel * 0.16);
-              const animDelay = `${(i * (0.9 / standardCount)).toFixed(2)}s`;
-              const animDuration = `${1.2 + (i % 3) * 0.35 - (rankLevel * 0.12)}s`;
+              const animDelay = `${(i * (2.8 / standardCount)).toFixed(2)}s`;
+              const animDuration = `${(0.65 + (i % 3) * 0.25 - (rankLevel * 0.05)) * 4}s`;
+              const fallVal = `${240 + (i % 3) * 25 + rankLevel * 10}px`;
+
+              // 3D Parallax offset based on mouse position relative to center (glare.x - 50)
+              const factor = 0.08 + (i % 4) * 0.08;
+              const mouseTranslateX = (glare.x - 50) * factor;
+              const mouseTranslateY = (glare.y - 50) * factor;
+
               return (
                 <div
-                  key={`spark-${i}`}
-                  className="absolute bottom-0 rounded-full erupt-spark"
+                  key={`spark-wrap-${i}`}
+                  className="absolute transition-transform duration-200 ease-out"
                   style={{
                     left: `${leftPos}%`,
-                    width: '3px',
-                    height: '3px',
-                    backgroundColor: tier.accentColor,
-                    boxShadow: `0 0 ${10 + rankLevel * 5}px ${1.5 + rankLevel * 0.6}px ${tier.accentColor}`,
-                    animationDelay: animDelay,
-                    animationDuration: animDuration,
-                    ['--spark-drift' as any]: driftVal,
-                    transform: `scale(${scaleVal})`,
+                    top: `${topPos}%`,
+                    transform: `translate3d(${mouseTranslateX}px, ${mouseTranslateY}px, 0px)`,
                   }}
-                />
+                >
+                  <div
+                    className="rounded-full erupt-spark"
+                    style={{
+                      width: '3px',
+                      height: '3px',
+                      backgroundColor: tier.accentColor,
+                      boxShadow: `0 0 ${10 + rankLevel * 5}px ${1.5 + rankLevel * 0.6}px ${tier.accentColor}`,
+                      animationDelay: animDelay,
+                      animationDuration: animDuration,
+                      ['--spark-drift' as any]: driftVal,
+                      ['--spark-scale' as any]: scaleVal,
+                      ['--spark-y-start' as any]: '0px',
+                      ['--spark-y-end' as any]: fallVal,
+                    }}
+                  />
+                </div>
               );
             })}
 
             {/* Layer C: Slow Drifting Ambient Starry Dust */}
             {Array.from({ length: driftCount }).map((_, i) => {
               const leftPos = 8 + (i * 84) / (driftCount - 1 || 1) + (Math.cos(i * 1.9) * 4);
+              const topPos = -5 - (i % 8) * 2; // Start just above/at the top edge
               const driftVal = `${(Math.cos(i * 2.4) * 30 * (1 + rankLevel * 0.25)).toFixed(0)}px`;
               const scaleVal = (0.2 + (i % 5) * 0.15) * (0.9 + rankLevel * 0.12);
-              const animDelay = `${(i * (1.6 / driftCount)).toFixed(2)}s`;
-              const animDuration = `${2.0 + (i % 3) * 0.5}s`;
+              const animDelay = `${(i * (4.8 / driftCount)).toFixed(2)}s`;
+              const animDuration = `${(1.1 + (i % 3) * 0.3) * 4}s`;
+              const fallVal = `${200 + (i % 3) * 20 + rankLevel * 8}px`;
+
+              // 3D Parallax offset based on mouse position relative to center (glare.x - 50)
+              const factor = 0.05 + (i % 5) * 0.06;
+              const mouseTranslateX = (glare.x - 50) * factor;
+              const mouseTranslateY = (glare.y - 50) * factor;
+
               return (
                 <div
-                  key={`drift-${i}`}
-                  className="absolute bottom-0 rounded-full erupt-spark-drift"
+                  key={`drift-wrap-${i}`}
+                  className="absolute transition-transform duration-200 ease-out"
                   style={{
                     left: `${leftPos}%`,
-                    width: '2px',
-                    height: '2px',
-                    backgroundColor: tier.accentColor,
-                    boxShadow: `0 0 ${8 + rankLevel * 4}px ${1 + rankLevel * 0.4}px ${tier.accentColor}`,
-                    animationDelay: animDelay,
-                    animationDuration: animDuration,
-                    ['--spark-drift' as any]: driftVal,
-                    transform: `scale(${scaleVal})`,
+                    top: `${topPos}%`,
+                    transform: `translate3d(${mouseTranslateX}px, ${mouseTranslateY}px, 0px)`,
                   }}
-                />
+                >
+                  <div
+                    className="rounded-full erupt-spark-drift"
+                    style={{
+                      width: '2px',
+                      height: '2px',
+                      backgroundColor: tier.accentColor,
+                      boxShadow: `0 0 ${8 + rankLevel * 4}px ${1 + rankLevel * 0.4}px ${tier.accentColor}`,
+                      animationDelay: animDelay,
+                      animationDuration: animDuration,
+                      ['--spark-drift' as any]: driftVal,
+                      ['--spark-scale' as any]: scaleVal,
+                      ['--spark-y-start' as any]: '0px',
+                      ['--spark-y-end' as any]: fallVal,
+                    }}
+                  />
+                </div>
               );
             })}
 
-            {/* Multiple Expanding Shockwave Rings */}
-            {Array.from({ length: shockwaveCount }).map((_, i) => {
-              const size = 110 + i * 60 + rankLevel * 25;
-              const animDelay = `${i * 0.25}s`;
+            {/* Layer D: Magical Glowing Ambient Orbs */}
+            {Array.from({ length: shockwaveCount * 6 }).map((_, i) => {
+              const leftPos = 10 + (i * 80) / (shockwaveCount * 6 - 1 || 1) + (Math.sin(i * 2.8) * 6);
+              const topPos = -20 - (i % 5) * 5; // Start high up
+              const driftVal = `${(Math.sin(i * 2.1) * 50 * (1 + rankLevel * 0.3)).toFixed(0)}px`;
+              const scaleVal = (0.6 + (i % 3) * 0.4) * (1.0 + rankLevel * 0.15);
+              const animDelay = `${(i * 0.32).toFixed(2)}s`;
+              const animDuration = `${(1.4 + (i % 3) * 0.4) * 4}s`;
+              const size = rankLevel >= 4 ? '6px' : '4px';
+              const fallVal = `${220 + (i % 3) * 30 + rankLevel * 8}px`;
+
+              // 3D Parallax offset based on mouse position relative to center (glare.x - 50)
+              const factor = 0.15 + (i % 4) * 0.08;
+              const mouseTranslateX = (glare.x - 50) * factor;
+              const mouseTranslateY = (glare.y - 50) * factor;
+
               return (
                 <div
-                  key={`shock-${i}`}
-                  className="absolute rounded-full border erupt-shockwave"
+                  key={`orb-wrap-${i}`}
+                  className="absolute transition-transform duration-200 ease-out"
                   style={{
-                    left: `${glare.x}%`,
-                    top: `${glare.y}%`,
-                    width: `${size}px`,
-                    height: `${size}px`,
-                    marginLeft: `-${size / 2}px`,
-                    marginTop: `-${size / 2}px`,
-                    borderColor: tier.accentColor,
-                    boxShadow: `0 0 ${25 + rankLevel * 12}px ${2 + rankLevel * 0.8}px ${tier.accentColor}`,
-                    animationDelay: animDelay,
-                    opacity: 0.7 - i * 0.15,
+                    left: `${leftPos}%`,
+                    top: `${topPos}%`,
+                    transform: `translate3d(${mouseTranslateX}px, ${mouseTranslateY}px, 0px)`,
                   }}
-                />
+                >
+                  <div
+                    className="rounded-full erupt-spark-drift"
+                    style={{
+                      width: size,
+                      height: size,
+                      backgroundColor: tier.accentColor,
+                      boxShadow: `0 0 ${15 + rankLevel * 6}px ${2 + rankLevel * 0.5}px ${tier.accentColor}, 0 0 ${6 + rankLevel * 2}px 1px #ffffff`,
+                      animationDelay: animDelay,
+                      animationDuration: animDuration,
+                      ['--spark-drift' as any]: driftVal,
+                      ['--spark-scale' as any]: scaleVal,
+                      ['--spark-y-start' as any]: '0px',
+                      ['--spark-y-end' as any]: fallVal,
+                      opacity: 0.8,
+                    }}
+                  />
+                </div>
               );
             })}
           </div>
@@ -535,7 +611,7 @@ const HolderTierCard = ({ tier }: { tier: Tier; key?: React.Key }) => {
 
       {/* Right side: Portrait Avatar Circular Ring with gold halo */}
       <div 
-        className="flex-shrink-0 w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] mt-8 sm:mt-0 relative overflow-visible flex items-center justify-center"
+        className="flex-shrink-0 w-[220px] h-[220px] sm:w-[260px] sm:h-[260px] mt-8 sm:mt-0 relative overflow-visible flex items-center justify-center z-10"
         style={{
           transform: hovered ? 'translateY(-8px) translateZ(50px)' : 'translateY(0) translateZ(0)',
           transition: 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
