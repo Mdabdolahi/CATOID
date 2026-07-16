@@ -1,9 +1,80 @@
+import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { CONTRACT_ADDRESS } from '../data';
 import catoidLogo from '../assets/images/catoid_logo_1783991087353.jpg';
 
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  tx: string;
+  ty: string;
+  color: string;
+  size: number;
+}
+
+interface Shockwave {
+  id: number;
+  x: number;
+  y: number;
+}
+
 export default function Hero() {
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const [shockwaves, setShockwaves] = useState<Shockwave[]>([]);
+
+  const handleHeadingClick = (e: React.MouseEvent<HTMLHeadingElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    // Create shockwaves at the click point
+    const newShockwaveId = Date.now() + Math.random();
+    setShockwaves((prev) => [...prev, { id: newShockwaveId, x: clickX, y: clickY }]);
+    setTimeout(() => {
+      setShockwaves((prev) => prev.filter((sw) => sw.id !== newShockwaveId));
+    }, 1000);
+
+    // Create particles radiating outwards
+    const colors = [
+      '#ef4444', // Red
+      '#f97316', // Orange
+      '#eab308', // Yellow
+      '#22c55e', // Green
+      '#06b6d4', // Cyan
+      '#3b82f6', // Blue
+      '#a855f7', // Purple
+      '#ec4899', // Pink
+    ];
+
+    const newParticles = Array.from({ length: 24 }).map((_, i) => {
+      const angle = (i * 15 + Math.random() * 10) * (Math.PI / 180);
+      const velocity = 80 + Math.random() * 160; // distance to travel
+      const tx = `${Math.cos(angle) * velocity}px`;
+      const ty = `${Math.sin(angle) * velocity}px`;
+      const color = colors[i % colors.length];
+      const size = 6 + Math.random() * 10; // size range
+
+      return {
+        id: Date.now() + i + Math.random(),
+        x: clickX,
+        y: clickY,
+        tx,
+        ty,
+        color,
+        size,
+      };
+    });
+
+    setParticles((prev) => [...prev, ...newParticles]);
+    setTimeout(() => {
+      const particleIds = newParticles.map((p) => p.id);
+      setParticles((prev) => prev.filter((p) => !particleIds.includes(p.id)));
+    }, 900);
+  };
+
   return (
+
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-28 pb-16 bg-[#050505] bg-grid-mesh">
       {/* Background Radial Glow Nodes */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none" />
@@ -44,10 +115,47 @@ export default function Hero() {
             <div className="absolute top-1/2 -right-1 -translate-y-1/2 w-3 h-3 bg-orange-500 rotate-45 border border-white shadow-[0_0_10px_#f97316]" />
           </div>
 
-          {/* Heading with color shift */}
-          <h1 className="text-7xl sm:text-8xl lg:text-9xl font-black italic tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-green-400 mb-6 uppercase">
-            CATOID
-          </h1>
+          {/* Heading with 3D Spectrum styling and interactive RGB explosion */}
+          <div className="relative w-full overflow-visible flex items-center justify-center py-4 mb-8">
+            <h1 
+              onClick={handleHeadingClick}
+              className="text-7xl sm:text-8xl lg:text-[10rem] font-black italic tracking-tighter leading-none mb-0 uppercase text-3d-glorious select-none cursor-pointer relative z-20 active:scale-95 transition-transform"
+            >
+              CATOID
+            </h1>
+
+            {/* Render Shockwaves */}
+            {shockwaves.map((sw) => (
+              <div
+                key={sw.id}
+                className="absolute rounded-full border border-white pointer-events-none animate-rgb-shockwave z-10"
+                style={{
+                  left: sw.x,
+                  top: sw.y,
+                  width: '100px',
+                  height: '100px',
+                }}
+              />
+            ))}
+
+            {/* Render Particles */}
+            {particles.map((p) => (
+              <div
+                key={p.id}
+                className="absolute rounded-full pointer-events-none animate-rgb-particle z-10"
+                style={{
+                  left: p.x,
+                  top: p.y,
+                  width: p.size,
+                  height: p.size,
+                  backgroundColor: p.color,
+                  boxShadow: `0 0 10px ${p.color}, 0 0 20px ${p.color}`,
+                  ['--tx' as any]: p.tx,
+                  ['--ty' as any]: p.ty,
+                }}
+              />
+            ))}
+          </div>
 
           {/* Tagline */}
           <p className="font-sans font-semibold text-lg sm:text-2xl text-gray-300 max-w-2xl mx-auto tracking-wide mb-10 leading-relaxed">
@@ -60,16 +168,10 @@ export default function Hero() {
               href="https://jup.ag/swap?sell=So11111111111111111111111111111111111111112&buy=EfU4xWf6c6ZqPKcBxWDjDQyak4iExcBoehXaSacrpump"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto px-8 py-3.5 bg-white text-black font-sans font-bold text-xs uppercase tracking-widest rounded-full hover:bg-zinc-200 transition-all duration-300 flex items-center justify-center group"
+              className="w-full sm:w-auto px-8 py-3.5 btn-rainbow-glow font-sans font-bold text-xs uppercase tracking-widest rounded-full flex items-center justify-center group"
             >
               Buy CATOID
               <ArrowRight className="ml-2 h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-            </a>
-            <a
-              href="#about"
-              className="w-full sm:w-auto px-8 py-3.5 bg-white/5 border border-white/10 text-white font-sans font-bold text-xs uppercase tracking-widest rounded-full hover:bg-white/10 transition-all duration-300 flex items-center justify-center"
-            >
-              Explore Spectrum
             </a>
           </div>
         </div>

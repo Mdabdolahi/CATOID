@@ -20,6 +20,7 @@ export default function Header() {
 
   const navItems = [
     { label: 'About', href: '#about' },
+    { label: 'Holder Tiers', href: '#tiers' },
     { label: 'FAQ', href: '#faq' },
   ];
 
